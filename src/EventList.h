@@ -8,29 +8,35 @@
 #ifndef EVENTLIST_H_
 #define EVENTLIST_H_
 
-struct Node {
-	int eventType;
-	Node * next;
+enum EventType {
+	EV_C_IN, EV_C_OUT
+};
+struct Event {
+	EventType eventType;
+	double occured_t;
+	Event * next;
 };
 
 class EventList {
-	private:
-		Node * head;
-		int listLength;
+private:
+	Event * head;
+	int listLength;
 
-	public:
-		EventList();
+public:
+	EventList();
 
-		bool insertNode(Node * newNode, int position);
+	bool insertEvent(Event * newEvent);
 
-		bool getNode(int position);
+	Event * popEvent();
 
-		void printList();
+	void printList();
 
-		int getLength(){
-			return listLength;
-		}
+	int getLength() {
+		return listLength;
+	}
 
-		~EventList();
+	bool isEmpty();
+
+//	~EventList();
 };
 #endif
