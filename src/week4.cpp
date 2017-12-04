@@ -12,11 +12,12 @@ using namespace std;
 
 long gen1(int n,long a,long m,long c,long seed){
 
-	int prev_xn=seed;
-	long xn;
+	long long int prev_xn=seed;
+	long xn=0;
 
 	while(n>0){
-		xn=(a*prev_xn)%m;
+		long long int tmp = (a*prev_xn);
+		xn=tmp%m;
 		prev_xn=xn;
 		n--;
 	}

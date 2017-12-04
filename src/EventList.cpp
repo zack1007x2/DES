@@ -11,113 +11,82 @@
 
 using namespace std;
 
-bool EventList::insertNode(Node * newNode, int position) {
-	cout << "\ninsertNode ..." << endl;
-	if ((position <= 0) || (position > listLength + 1)) {
-		cout << "Insert Error: position out of range." << endl;
-		return false;
-	}
-	if (!head->next) {
-		head->next = newNode;
+bool EventList::insertEvent(Event * newEvent) {
+	if (head == NULL) {	// empty
+		head = newEvent;
 		listLength++;
-		cout << "Success: added '" << newNode->eventType << "' to position "
-				<< position << ".\n";
-		cout << "listLength = " << listLength << endl;
 		return true;
 	}
-	int count = 0;
-	Node * p = head;
-	Node * q = head;
-	while (q) {
-		if (count == position) {
-			p->next = newNode;
-			newNode->next = q;
-			listLength++;
-			return true;
-		}
-		p = q;
-		q = p->next;
-		count++;
+
+	Event * cur = head;
+	Event * pre = NULL;
+	while (cur != NULL) {	// search insert location
+		if (newEvent->occured_t < cur->occured_t)
+			break;
+
+		pre = cur;
+		cur = cur->next;
 	}
-	if (count == position) {
-		p->next = newNode;
-		newNode->next = q;
-		listLength++;
-		cout << "Success: added '" << newNode->eventType << "' to position "
-				<< position << ".\n";
-		cout << "listLength = " << listLength << endl;
-		return true;
+
+	if (pre == NULL) {	// insert head
+		newEvent->next = head;
+		head = newEvent;
 	}
-	cout << "Error: song node was not added to list." << endl;
-	return false;
+	else {
+		newEvent->next = cur;
+		pre->next = newEvent;
+	}
+
+	listLength++;
+	return true;
 }
 
-bool EventList::getNode(int position) {
-	cout << "\nEntering removeNode..." << endl;
-	if ((position <= 0) || (position > listLength + 1)) {
-		cout << "Error: the given position is out of range." << endl;
-		return false;
-	}
-	if (!head->next) {
-		cout << "Error: there is nothing to remove." << endl;
-		return false;
+Event * EventList::popEvent() {
+	if(listLength==0){
+		return NULL;
 	}
 
-	int count = 0;
-	Node * p = head;
-	Node * q = head;
-	while (q) {
-		if (count == position) {
-			p->next = q->next;
-			delete q;
-			listLength--;
-			cout << "Success: node at position " << position << " was deleted."
-					<< endl;
-			cout << "listLength = " << listLength << endl;
-			return true;
-		}
-		p = q;
-		q = p->next;
-		count++;
-	}
-	cout << "Error: nothing was removed from the list." << endl;
-	return false;
+	Event *tmp = head;
+	head = head->next;
+	listLength--;
+	return tmp;
 }
 
 void EventList::printList() {
 	cout << "\nStart printList..." << endl;
-	int count = 0;
-	Node * p = head;
-	Node * q = head;
-	while (q) {
-		p = q;
-		q = p->next;
-		if (count == 0) {
-			count++;
-			continue;
-		}
+	int count = 1;
+	Event * p = head;
+	while (p) {
 		cout << "---------------------\n";
 		cout << "\t position: " << count << "\n";
-		cout << "\t data: " << p->eventType << "\n";
+		cout << "\t data: " << p->occured_t << "\n";
+		count++;
+
+		p = p->next;
 		count++;
 	}
 }
+bool EventList::isEmpty(){
+	return head==NULL;
+}
 //constructor
 EventList::EventList() {
-	head = new Node;
-	head->eventType = 0;
-	head->next = NULL;
+	head = NULL;
+//	head = new Event;
+//	head->eventType = HEADER;
+//	head->occured_t=0;
+//	head->next = NULL;
 	listLength = 0;
 }
 
-EventList::~EventList() {
-	Node * p = head;
-	Node * q = head;
-	while (q) {
-		p = q;
-		q = p->next;
-		delete p;
-	}
-	cout << "\nlist deleted." << endl;
-}
+//EventList::~EventList() {
+//	Event * p = head;
+//	Event * q = head;
+//	while (q) {
+//		p = q;
+//		q = p->next;
+//		delete p;
+//	}
+//	cout << "\nlist deleted." << endl;
+//}
 
