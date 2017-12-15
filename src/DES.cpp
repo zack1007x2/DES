@@ -15,7 +15,9 @@
 #include "week9.h"
 #include "week10.h"
 #include "week11.h"
-
+#include "week12.h"
+#include "week13.h"
+#include "week14.h"
 using namespace std;
 
 int main() {
@@ -26,6 +28,9 @@ int main() {
 //	week8();
 //	week9();
 //	week10();
-	week11();
+//	week11(1000);
+//	week12();
+//	week13();
+	week14();
 	return 0;
 }
