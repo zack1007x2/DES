@@ -9,7 +9,7 @@
 #define EVENTLIST_H_
 
 enum EventType {
-	EV_C_IN, EV_C_OUT
+	EV_C_IN, EV_C_OUT, EV_C_CLERK_IN, EV_C_CLERK_OUT, EV_C_SELF_OUT, EV_C_CASHER_IN
 };
 struct Event {
 	EventType eventType;

@@ -11,8 +11,13 @@
 
 class week14 {
 	private:
-		double sample_means[10];
-		double means[10];
+		const static int ROUND_CNT = 10;
+		const static int CUST_CNT = 1000;
+		double ans[CUST_CNT];
+		double sample_means[ROUND_CNT];
+		long double upper_bounds[CUST_CNT];
+		long double lower_bounds[CUST_CNT];
+		double means[ROUND_CNT];
 public:
 	week14();
 };

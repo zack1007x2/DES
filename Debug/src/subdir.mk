@@ -6,11 +6,14 @@
 CPP_SRCS += \
 ../src/DES.cpp \
 ../src/EventList.cpp \
+../src/Queue.cpp \
+../src/final.cpp \
 ../src/week10.cpp \
 ../src/week11.cpp \
 ../src/week12.cpp \
 ../src/week13.cpp \
 ../src/week14.cpp \
+../src/week15ex26.cpp \
 ../src/week4.cpp \
 ../src/week5.cpp \
 ../src/week6.cpp \
@@ -21,11 +24,14 @@ CPP_SRCS += \
 OBJS += \
 ./src/DES.o \
 ./src/EventList.o \
+./src/Queue.o \
+./src/final.o \
 ./src/week10.o \
 ./src/week11.o \
 ./src/week12.o \
 ./src/week13.o \
 ./src/week14.o \
+./src/week15ex26.o \
 ./src/week4.o \
 ./src/week5.o \
 ./src/week6.o \
@@ -36,11 +42,14 @@ OBJS += \
 CPP_DEPS += \
 ./src/DES.d \
 ./src/EventList.d \
+./src/Queue.d \
+./src/final.d \
 ./src/week10.d \
 ./src/week11.d \
 ./src/week12.d \
 ./src/week13.d \
 ./src/week14.d \
+./src/week15ex26.d \
 ./src/week4.d \
 ./src/week5.d \
 ./src/week6.d \

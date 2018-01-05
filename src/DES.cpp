@@ -18,6 +18,8 @@
 #include "week12.h"
 #include "week13.h"
 #include "week14.h"
+#include "week15ex26.h"
+#include "final.h"
 using namespace std;
 
 int main() {
@@ -28,9 +30,11 @@ int main() {
 //	week8();
 //	week9();
 //	week10();
-//	week11(1000);
+//	week11(1000000);
 //	week12();
 //	week13();
-	week14();
+//	week14();
+//	week15_ex26();
+	final();
 	return 0;
 }

@@ -17,6 +17,8 @@ public:
 	week11(int CUSTOMER_TOTAL);
 	~week11();
 };
-std::map<MAP_TAG, double> runMM1(double lamda, double mu, double cus_seed,double ser_seed, int cust_cnt);
+//std::map<MAP_TAG, double> runMM1(double lamda, double mu, double cus_seed,double ser_seed, int cust_cnt);
+std::map<MAP_TAG, double>* runMM1(double lamda, double mu, double cus_seed,double ser_seed, int cust_cnt);
 double* getDetailList();
+void release_MEMO();
 #endif /* WEEK11_H_ */

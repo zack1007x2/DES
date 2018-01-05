@@ -20,32 +20,33 @@
 
 using namespace std;
 
-map<MAP_TAG, double> mResultMap;
-map<int, double> mDetailTable;
-
-
 struct Cus {
 	double arr_time; //arrive = sys_time+arrive time
 	double stay_in_sys_time; //stay in sys = sys_time
 	double service_time; //service cost
+	int cust_num;
 };
-const bool DEBUG = false;
+//map<MAP_TAG, double> mResultMap;
+map<MAP_TAG, double>* pResultMap;
+EventList mList;
 const int QUEUE_MAX = 1000;
-int CUSTOMER_TOTAL;
 Cus cusQ[QUEUE_MAX];
+void pushCusQ(Cus& cIn);
+Cus popCustQ();
+
+bool DEBUG = false;
+int CUSTOMER_TOTAL = 0;
 double * Yi;
 int head_cus = 0;
 int tail_cus = 0;
 int head_evnt = 0;
 int tail_evnt = 0;
 
-int isCusQEmpty = 1;
-int isCusQFull = 0;
+//int isCusQEmpty = 1;
+//int isCusQFull = 0;
 int isEventQEmpty = 1;
 int isEventQFull = 0;
 
-void pushCusQ(Cus& cIn);
-Cus popCustQ();
 double curr_sys_time;
 double next_cust_t;
 double seed_cust;
@@ -62,24 +63,20 @@ const long m = 2147483647;
 const long c = 0;
 double lamda_cus = 4.5;
 double mu_ser = 5;
-EventList mList;
 
 void pushCusQ(Cus& cIn) {
-	if ((tail_cus + 1) % QUEUE_MAX == head_cus)
-		isCusQFull = 1;
-	if (isCusQFull) {
+	if ((tail_cus + 1) % QUEUE_MAX == head_cus) {
 		cout << "ERROR:CustQ Full^^^^^^^^^^^^^^^^^^" << endl;
 		return;
 	}
-	isCusQEmpty = 0;
 	cusQ[tail_cus] = cIn;
 	tail_cus++;
-	if (tail_cus >= 999)
+	if (tail_cus >= QUEUE_MAX)
 		tail_cus = 0;
 }
 
 Cus popCustQ() {
-	if (isCusQEmpty) {
+	if (head_cus == tail_cus) {
 		cout << "ERROR:CustQ Empty*****************" << endl;
 	}
 
@@ -88,10 +85,11 @@ Cus popCustQ() {
 	if (head_cus >= QUEUE_MAX)
 		head_cus = 0;
 
-	if (head_cus == tail_cus) {
-		isCusQEmpty = 1;
-	}
 	return ret;
+}
+
+bool isEmptyQ() {
+	return head_cus == tail_cus;
 }
 
 void showResult() {
@@ -99,18 +97,17 @@ void showResult() {
 	double sample_mean = sum_sys_time_of_customers / CUSTOMER_TOTAL;
 	double sum_of_var = 0;
 	double mean = 1.0 / (mu_ser - lamda_cus);
-	if (DEBUG) {
-		cout << "1/mu-lamda : " << mean << endl;
-		cout << "Mean system time of the customers : " << sample_mean << endl;
-	}
-//	mResultMap.insert(pair<MAP_TAG, double>(SAMPLE_MEAN, sum_sys_time_of_customers / CUSTOMER_TOTAL));
-	mResultMap[SAMPLE_MEAN] = sample_mean;
-	for (int i = 0; i < 1000; i++) {
+//	if (DEBUG) {
+	cout << "1/mu-lamda : " << mean << endl;
+	cout << "Mean system time of the customers : " << sample_mean << endl;
+//	}
+	(*pResultMap)[SAMPLE_MEAN] = sample_mean;
+	for (int i = 0; i < CUSTOMER_TOTAL; i++) {
 		sum_of_var += pow((double) (Yi[i] - sample_mean), 2.0);
 	}
-	mResultMap[SAMPLE_VAR] = sqrt(sum_of_var / (CUSTOMER_TOTAL - 1));
-	mResultMap[MEAN] = mean;
-	mResultMap[SUM_VAR] = sum_of_var;
+	(*pResultMap)[SAMPLE_VAR] = sqrt(sum_of_var / (CUSTOMER_TOTAL - 1));
+	(*pResultMap)[MEAN] = mean;
+	(*pResultMap)[SUM_VAR] = sum_of_var;
 }
 
 double getServiceTime() {
@@ -130,7 +127,10 @@ double getInterArrivalTime() {
 		cout << "      arrive_time : " << arrive_time << endl;
 	return arrive_time;
 }
-void cusIn(bool isFinishing) {
+
+int test_counter = 0;
+
+void cusIn(bool isFinishing, int cust_num) {
 	if (DEBUG)
 		cout << "CustIn at " << curr_sys_time << endl;
 
@@ -140,7 +140,13 @@ void cusIn(bool isFinishing) {
 		 */
 		Cus cus;
 		cus.arr_time = curr_sys_time;
+		cus.cust_num = cust_num;
+//		cout << "arr t : "<<curr_sys_time << endl;
+//		cout << "cust num : "<<cust_num << endl;
 		pushCusQ(cus);
+
+//		test_counter++;
+//		cout << "in : "<<test_counter << endl;
 
 //		cout << "###################### PUSH CUST" << endl;
 	} else {
@@ -160,7 +166,7 @@ void cusIn(bool isFinishing) {
 		mList.insertEvent(next_dep);
 		if (DEBUG)
 			cout << "---(CusIn)INSERT DEP----" << next_dep->occured_t << endl;
-		Yi[cnt] = serv_time;
+		Yi[cust_num] = serv_time;
 	}
 
 //schedule next event (IN)
@@ -179,10 +185,14 @@ void cusIn(bool isFinishing) {
 void cusOut() {
 	if (DEBUG)
 		cout << "CustOut at " << curr_sys_time << endl;
-	if (isCusQEmpty) {
+	if (isEmptyQ()) {
 		isServerBusy = 0; //server 忙完且無下一位顧客
 	} else { //有人在waiting
 		Cus tmp = popCustQ();
+//		test_counter--;
+//		cout << "@@@@@@@@ out : "<<test_counter << endl;
+//		cout<<"arr_time"<<tmp.arr_time<<endl;
+
 		double waitInQTime = curr_sys_time - tmp.arr_time;
 //		cout << "&&&&&&&&&&& waitInQTime : " << waitInQTime << endl;
 
@@ -195,13 +205,14 @@ void cusOut() {
 		if (DEBUG)
 			cout << "---(CusOut)INSERT DEP----" << dep->occured_t << endl;
 
-		sum_sys_time_of_customers += waitInQTime + service_t;
-//		cout<< "<<<<<<<<<<<<<<  "<<sum_sys_time_of_customers<<endl;
-		Yi[cnt] = waitInQTime + service_t;
+		sum_sys_time_of_customers += (waitInQTime + service_t);
+		Yi[tmp.cust_num] = waitInQTime + service_t;
 	}
 }
 
 void init(int CUSTOMER_CNT, double cus_seed, double ser_seed) {
+	pResultMap = new map<MAP_TAG, double>();
+
 //first cust_in event
 	seed_cust = cus_seed;
 	seed_service = ser_seed;
@@ -211,22 +222,20 @@ void init(int CUSTOMER_CNT, double cus_seed, double ser_seed) {
 	isServerBusy = 0;
 	sum_sys_time_of_customers = 0;
 
-
 	head_cus = 0;
 	tail_cus = 0;
 	head_evnt = 0;
 	tail_evnt = 0;
 
-	isCusQEmpty = 1;
-	isCusQFull = 0;
+//	isCusQEmpty = 1;
+//	isCusQFull = 0;
 	isEventQEmpty = 1;
 	isEventQFull = 0;
 
 	R_arrive_time = 0;
 	R_serv_time = 0;
 
-	cnt = 1;
-//	cout<< "<<<<<<<<<<<<<<  "<<sum_sys_time_of_customers<<endl;
+	cnt = 0;
 }
 void machineStart() {
 
@@ -251,7 +260,7 @@ void machineStart() {
 					<< endl;
 		switch (tmp->eventType) {
 		case EV_C_IN:
-			cusIn(false);
+			cusIn(false, cnt);
 			cnt++;
 			break;
 		case EV_C_OUT:
@@ -274,7 +283,7 @@ void machineStart() {
 					<< endl;
 		switch (tmp->eventType) {
 		case EV_C_IN:
-			cusIn(true);
+			cusIn(true, ++cnt);
 			break;
 		case EV_C_OUT:
 			cusOut();
@@ -285,23 +294,29 @@ void machineStart() {
 	return;
 }
 
-map<MAP_TAG, double> runMM1(double l, double u, double cus_seed,double ser_seed, int cust_cnt) {
-	mu_ser = u;
+map<MAP_TAG, double>* runMM1(double l, double u, double cus_seed,
+		double ser_seed, int cust_cnt) {
 	lamda_cus = l;
+	mu_ser = u;
 	init(cust_cnt, cus_seed, ser_seed);
 	machineStart();
-	return mResultMap;
+	return pResultMap;
 }
 
-double* getDetailList(){
+double* getDetailList() {
 	return Yi;
 }
 
+void release_MEMO(){
+
+}
+
 week11::week11(int CUSTOMER_CNT) {
-	runMM1(4.5, 5, 54325, 345235, CUSTOMER_CNT);
+//	DEBUG = true;
+	runMM1(4.5, 5, 17, 54, CUSTOMER_CNT);
+//	DEBUG = false;
 }
 week11::~week11() {
 	cout << "RELEASE MEMO" << endl;
-	mResultMap.clear();
-	mDetailTable.clear();
+	pResultMap->clear();
 }

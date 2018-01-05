@@ -7,103 +7,108 @@
 
 #include "week14.h"
 #include "week11.h"
-#include "week12.h"
 #include "week4.h"
 #include <math.h>
 #include <iostream>
-#include <iomanip>;
+#include <fstream>
 
 using namespace std;
 
-double ans[1000];
-long double upper_bounds[1000];
-long double lower_bounds[1000];
-double* detailList;
+
 
 week14::week14() {
 
 	long a = 16807; //7^5
 	long m = 2147483647;
-	long c = 0;
-	double seed_ser = 31534;
-	double cust_arr = 9836;
+	long c = 10;
+//	double seed_ser = 0;
+//	double seed_cus = 0;
 
-	double table25_d9 = 2.26215716;
+	double seed_sers[ROUND_CNT] = { 0 };
+	double seed_cuss[ROUND_CNT] = { 0 };
 
-	map<MAP_TAG, double> mMap;
-	for (int i = 0; i < 1000; i++) {
-		seed_ser = gen1(1, a, m, c, seed_ser);
-		cust_arr = gen1(1, a, m, c, cust_arr);
-		mMap = runMM1(4.5, 5, cust_arr, seed_ser, i+1);
-		sample_means[i%10] = mMap[SAMPLE_MEAN];
-		means[i%10] = mMap[MEAN];
-		mMap.clear();
-//		mMap = runMM1(4.5, 5, 12234, 67547, i);
-//		sample_means[1] = mMap[SAMPLE_MEAN];
-//		means[1] = mMap[MEAN];
-//		mMap.clear();
-//		mMap = runMM1(4.5, 5, 24364, 23463, i);
-//		sample_means[2] = mMap[SAMPLE_MEAN];
-//		means[2] = mMap[MEAN];
-//		mMap.clear();
-//		mMap = runMM1(4.5, 5, 768574, 34554, i);
-//		sample_means[3] = mMap[SAMPLE_MEAN];
-//		means[3] = mMap[MEAN];
-//		mMap.clear();
-//		mMap = runMM1(4.5, 5, 6758574, 980765, i);
-//		sample_means[4] = mMap[SAMPLE_MEAN];
-//		means[4] = mMap[MEAN];
-//		mMap.clear();
-//		mMap = runMM1(4.5, 5, 639494, 837366, i);
-//		sample_means[5] = mMap[SAMPLE_MEAN];
-//		means[5] = mMap[MEAN];
-//		mMap.clear();
-//		mMap = runMM1(4.5, 5, 385, 546372, i);
-//		sample_means[6] = mMap[SAMPLE_MEAN];
-//		means[6] = mMap[MEAN];
-//		mMap.clear();
-//		mMap = runMM1(4.5, 5, 123, 45677, i);
-//		sample_means[7] = mMap[SAMPLE_MEAN];
-//		means[7] = mMap[MEAN];
-//		mMap.clear();
-//		mMap = runMM1(4.5, 5, 93527, 12435664, i);
-//		sample_means[8] = mMap[SAMPLE_MEAN];
-//		means[8] = mMap[MEAN];
-//		mMap.clear();
-//		mMap = runMM1(4.5, 5, 468952, 7866762, i);
-//		sample_means[9] = mMap[SAMPLE_MEAN];
-//		means[9] = mMap[MEAN];
-//		mMap.clear();
+	double T_Value25_fd9 = 2.26215716;
 
-		double sample_mean_all = (sample_means[i%10] + sample_means[i%10]
-				+ sample_means[i%10] + sample_means[i%10] + sample_means[i%10]
-				+ sample_means[i%10] + sample_means[i%10] + sample_means[i%10]
-				+ sample_means[i%10] + sample_means[i%10]) / 10; //mean of rep'
+	map<MAP_TAG, double>* mMap;
+	//generate seeds
+//	for (int i = 0; i < ROUND_CNT; i++) {
+//		if (i > 0) {
+//			seed_ser = seed_sers[i - 1];
+//			seed_cus = seed_cuss[i - 1];
+//		}
+//		seed_sers[i] = gen1(1, a, m, c, seed_ser);
+//		seed_cuss[i] = gen1(1, a, m, c, seed_cus);
+//	}
 
-		double mean_all = (means[i%10] + means[i%10] + means[i%10] + means[i%10] + means[i%10]
-				+ means[i%10] + means[i%10] + means[i%10] + means[i%10] + means[i%10]) / 10; //mean of rep'
+	//gen seed list
+	long input[1000];
+	char filename[] = "/Users/Zack/Documents/DiscreteEventSim/week14_seed.txt";
+//
+//	gen3(a, m, c, 4, 1, filename, 1000);
+	ifstream fin;
+	fin.open(filename);
+	if (!fin) { //如果開啟檔案失敗，fp為0；成功，fp為非0
+		cout << "Fail to open file: " << filename << endl;
+		return;
+	} else {
+		int i = 0;
+		string str;
+		while (getline(fin, str)) {
+			input[i] = atol(str.c_str());
+			i++;
+		}
+	}
+	fin.close();
+
+	for (int i = 0; i < ROUND_CNT; i++) {
+		seed_cuss[i] = input[(20+i*2+1)%100];
+		seed_sers[i] = input[(7+i*2)%100];
+	}
+
+	char file_out[] = "/Users/Zack/Documents/DiscreteEventSim/week14_out.txt";
+	ofstream fout;
+	fout.open(file_out, ios::out);
+	//run MM1
+	double sample_mean_all = 0;
+	for (int i = 0; i < CUST_CNT; i++) {
+		for (int j = 0; j < ROUND_CNT; j++) {
+			mMap = runMM1(4.5, 5, seed_cuss[j], seed_sers[j], i + 1);
+			sample_means[j] = (*mMap)[SAMPLE_MEAN];
+			sample_mean_all += (*mMap)[SAMPLE_MEAN];
+			delete mMap;
+		}
+		sample_mean_all = sample_mean_all / ROUND_CNT; //mean of rep'
 
 		double sum_of_var = 0;
-		for (int j = 0; j < 10; j++)
+		for (int j = 0; j < ROUND_CNT; j++)
 			sum_of_var += pow(sample_means[j] - sample_mean_all, 2);
 
-		double S_sqr = sum_of_var / 9; //var of rep'
+		double S_sqr = sum_of_var / (ROUND_CNT - 1); //var of rep'
 
 		ans[i] = sample_mean_all;
-		upper_bounds[i] = sample_mean_all + table25_d9 * (sqrt(S_sqr) / 3);
-		lower_bounds[i] = sample_mean_all - table25_d9 * (sqrt(S_sqr) / 3);
+		upper_bounds[i] = sample_mean_all + T_Value25_fd9 * (sqrt(S_sqr) / sqrt(ROUND_CNT-1));
+		lower_bounds[i] = sample_mean_all - T_Value25_fd9 * (sqrt(S_sqr) / sqrt(ROUND_CNT-1));
 
 		cout << ans[i] << endl;
+		fout << ans[i] << endl;
 	}
-	cout << "-------------------------------------\n";
 
-	for (int i = 0; i < 1000; i++)
+	cout << "-------------------------------------\n";
+	fout << "-------------------------------------\n";
+
+	for (int i = 0; i < CUST_CNT; i++){
 		cout << upper_bounds[i] << endl;
-	cout << "-------------------------------------\n";
-
-	for (int i = 0; i < 1000; i++) {
-		cout << lower_bounds[i] << endl;
+		fout << upper_bounds[i] << endl;
 	}
 
+	cout << "-------------------------------------\n";
+	fout << "-------------------------------------\n";
+
+	for (int i = 0; i < CUST_CNT; i++){
+		cout << lower_bounds[i] << endl;
+		fout << lower_bounds[i] << endl;
+	}
+	fout.close();
 }
+
 

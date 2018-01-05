@@ -72,21 +72,7 @@ bool EventList::isEmpty(){
 //constructor
 EventList::EventList() {
 	head = NULL;
-//	head = new Event;
-//	head->eventType = HEADER;
-//	head->occured_t=0;
-//	head->next = NULL;
 	listLength = 0;
 }
 
-//EventList::~EventList() {
-//	Event * p = head;
-//	Event * q = head;
-//	while (q) {
-//		p = q;
-//		q = p->next;
-//		delete p;
-//	}
-//	cout << "\nlist deleted." << endl;
-//}
 
