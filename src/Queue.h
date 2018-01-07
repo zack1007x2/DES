@@ -11,8 +11,9 @@
 using namespace std;
 
 struct Cus {
-	double arr_time; //arrive = sys_time+arrive time
-	double sys_time; //stay in sys = sys_time
+	double arr_time; //tmp arrive value
+	double sys_arrive_time;
+	double sys_leave_time;
 	int cust_num;
 };
 
@@ -25,13 +26,13 @@ public :
 	int size();
 	bool isEmpty();
 	void clear();
-	void enqueue(Cus value);
-	Cus dequeue();
-	Cus peek();
+	void enqueue(Cus *value);
+	Cus* dequeue();
+	Cus* peek();
 	void expandCapacity();
 private :
 	static const int INITIAL_CAPACITY = 10;
-	Cus *data;
+	Cus** data;
 	int capacity;
 	int head;
 	int tail;

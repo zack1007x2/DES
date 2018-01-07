@@ -8,13 +8,15 @@
 #ifndef EVENTLIST_H_
 #define EVENTLIST_H_
 
+#include "Queue.h"
 enum EventType {
-	EV_C_IN, EV_C_OUT, EV_C_CLERK_IN, EV_C_CLERK_OUT, EV_C_SELF_OUT, EV_C_CASHER_IN
+	EV_C_IN, EV_C_OUT, EV_C_CLERK_IN, EV_C_CLERK_OUT, EV_C_SELF_OUT
 };
 struct Event {
 	EventType eventType;
 	double occured_t;
 	Event * next;
+	Cus *cus;
 };
 
 class EventList {

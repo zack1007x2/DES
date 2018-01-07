@@ -20,7 +20,7 @@
 
 using namespace std;
 
-struct Cus {
+struct Cust {
 	double arr_time; //arrive = sys_time+arrive time
 	double stay_in_sys_time; //stay in sys = sys_time
 	double service_time; //service cost
@@ -30,9 +30,9 @@ struct Cus {
 map<MAP_TAG, double>* pResultMap;
 EventList mList;
 const int QUEUE_MAX = 1000;
-Cus cusQ[QUEUE_MAX];
-void pushCusQ(Cus& cIn);
-Cus popCustQ();
+Cust cusQ[QUEUE_MAX];
+void pushCusQ(Cust &cIn);
+Cust popCustQ();
 
 bool DEBUG = false;
 int CUSTOMER_TOTAL = 0;
@@ -64,7 +64,7 @@ const long c = 0;
 double lamda_cus = 4.5;
 double mu_ser = 5;
 
-void pushCusQ(Cus& cIn) {
+void pushCusQ(Cust &cIn) {
 	if ((tail_cus + 1) % QUEUE_MAX == head_cus) {
 		cout << "ERROR:CustQ Full^^^^^^^^^^^^^^^^^^" << endl;
 		return;
@@ -75,12 +75,12 @@ void pushCusQ(Cus& cIn) {
 		tail_cus = 0;
 }
 
-Cus popCustQ() {
+Cust popCustQ() {
 	if (head_cus == tail_cus) {
 		cout << "ERROR:CustQ Empty*****************" << endl;
 	}
 
-	Cus ret = cusQ[head_cus];
+	Cust ret = cusQ[head_cus];
 	head_cus++;
 	if (head_cus >= QUEUE_MAX)
 		head_cus = 0;
@@ -138,7 +138,7 @@ void cusIn(bool isFinishing, int cust_num) {
 		/*
 		 * server正在服務 因此arrive 先進queue等待
 		 */
-		Cus cus;
+		Cust cus;
 		cus.arr_time = curr_sys_time;
 		cus.cust_num = cust_num;
 //		cout << "arr t : "<<curr_sys_time << endl;
@@ -188,7 +188,7 @@ void cusOut() {
 	if (isEmptyQ()) {
 		isServerBusy = 0; //server 忙完且無下一位顧客
 	} else { //有人在waiting
-		Cus tmp = popCustQ();
+		Cust tmp = popCustQ();
 //		test_counter--;
 //		cout << "@@@@@@@@ out : "<<test_counter << endl;
 //		cout<<"arr_time"<<tmp.arr_time<<endl;
