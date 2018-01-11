@@ -17,7 +17,7 @@ double res_mean, res_s;
 
 week15_ex26::week15_ex26() {
 	map<MAP_TAG, double>* mMap;
-	double T_Value25_fd8000 = 1.96026064;
+	double T_Value25_fd8000 = 2.24182477;
 	double sample_mean_all;
 	//run MM1
 	int CUST_CNT = 256000;

@@ -31,7 +31,7 @@ public :
 	Cus* peek();
 	void expandCapacity();
 private :
-	static const int INITIAL_CAPACITY = 10;
+	static const int INITIAL_CAPACITY = 1000;
 	Cus** data;
 	int capacity;
 	int head;

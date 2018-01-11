@@ -29,7 +29,7 @@ struct Cust {
 //map<MAP_TAG, double> mResultMap;
 map<MAP_TAG, double>* pResultMap;
 EventList mList;
-const int QUEUE_MAX = 1000;
+const int QUEUE_MAX = 10000;
 Cust cusQ[QUEUE_MAX];
 void pushCusQ(Cust &cIn);
 Cust popCustQ();
